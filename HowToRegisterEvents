@@ -1,0 +1,20 @@
+$fileWatcher = New-Object System.IO.FileSystemWatcher
+$fileWatcher.Path = "C:\Users\gonzalo.abella\Documents"
+Register-ObjectEvent -InputObject $fileWatcher -EventName Created -SourceIdentifier File.Created -Action {
+    $Global:t = $event
+    Write-Host ("File Created: {0} on {1}" -f $event.SourceEventArgs.Name, $event.SourceEventArgs.FullPath)
+} | Out-Null
+Register-ObjectEvent -InputObject $fileWatcher -EventName Deleted -SourceIdentifier File.Deleted -Action {
+    $Global:t = $event
+    Write-Host ("File Deleted: {0} on {1}" -f $event.SourceEventArgs.Name,
+    (Split-Path $event.SourceEventArgs.FullPath))
+} | Out-Null
+Register-ObjectEvent -InputObject $fileWatcher -EventName Changed -SourceIdentifier File.Changed -Action {
+    $Global:t = $event
+    Write-Host ("File Changed: {0} on {1}" -f $event.SourceEventArgs.Name,
+    (Split-Path $event.SourceEventArgs.FullPath))
+} | Out-Null
+
+Unregister-Event File.Created 
+Unregister-Event File.Deleted 
+Unregister-Event File.Changed 
